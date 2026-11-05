@@ -1,0 +1,8 @@
+[project]
+name = "comfyui-prompt-batch"
+version = "0.1.0"
+description = "One finished prompt and one seed per plate. Pair with Start Loop and Get Item From List."
+requires-python = ">=3.10"
+
+[tool.comfy]
+DisplayName = "Multy_prompts"
