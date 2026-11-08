@@ -1,8 +1,8 @@
 {
   "id": "dbb7d540-79f5-4742-89e6-b75a0292d0e2",
   "revision": 0,
-  "last_node_id": 54,
-  "last_link_id": 35,
+  "last_node_id": 48,
+  "last_link_id": 24,
   "nodes": [
     {
       "id": 2,
@@ -38,10 +38,10 @@
         }
       },
       "widgets_values": [
-        "moss_vae/flux2-vae.safetensors"
+        "krea2RealVae_v10.safetensors"
       ],
       "widgets_values_named": {
-        "vae_name": "moss_vae/flux2-vae.safetensors"
+        "vae_name": "krea2RealVae_v10.safetensors"
       },
       "ndSuperSelectorEnabled": false,
       "ndPowerEnabled": false,
@@ -85,13 +85,13 @@
         }
       },
       "widgets_values": [
-        "MosTx/qwen3.5_9b_w4a8_gptq.safetensors",
-        "moss_image",
+        "qwen3VL4BAbliteratedComfyui_v10_full_bf16.safetensors",
+        "krea2",
         "default"
       ],
       "widgets_values_named": {
-        "clip_name": "MosTx/qwen3.5_9b_w4a8_gptq.safetensors",
-        "type": "moss_image",
+        "clip_name": "qwen3VL4BAbliteratedComfyui_v10_full_bf16.safetensors",
+        "type": "krea2",
         "device": "default"
       },
       "ndSuperSelectorEnabled": false,
@@ -105,12 +105,12 @@
       "id": 6,
       "type": "UNETLoader",
       "pos": [
-        -79.21689402735774,
+        40,
         290
       ],
       "size": [
-        419.2150464226004,
-        144.4581615572279
+        300,
+        82
       ],
       "flags": {},
       "order": 2,
@@ -135,11 +135,11 @@
         }
       },
       "widgets_values": [
-        "MOSS/moss_image_sft_int8_convrot.safetensors",
+        "KREA2/krea2_turbo_fp8_scaled.safetensors",
         "default"
       ],
       "widgets_values_named": {
-        "unet_name": "MOSS/moss_image_sft_int8_convrot.safetensors",
+        "unet_name": "KREA2/krea2_turbo_fp8_scaled.safetensors",
         "weight_dtype": "default"
       },
       "ndSuperSelectorEnabled": false,
@@ -161,13 +161,13 @@
         290
       ],
       "flags": {},
-      "order": 16,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 25
+          "link": 24
         },
         {
           "name": "positive",
@@ -214,19 +214,19 @@
       "widgets_values": [
         42,
         "fixed",
-        25,
-        2.5,
-        "er_sde",
-        "simple",
+        10,
+        1,
+        "heunpp2",
+        "sgm_uniform",
         1
       ],
       "widgets_values_named": {
         "seed": 42,
         "control_after_generate": "fixed",
-        "steps": 25,
-        "cfg": 2.5,
-        "sampler_name": "er_sde",
-        "scheduler": "simple",
+        "steps": 10,
+        "cfg": 1,
+        "sampler_name": "heunpp2",
+        "scheduler": "sgm_uniform",
         "denoise": 1
       }
     },
@@ -242,7 +242,7 @@
         50
       ],
       "flags": {},
-      "order": 17,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -279,29 +279,21 @@
       "id": 21,
       "type": "SaveImage",
       "pos": [
-        1371.4698003173826,
-        712.933277154541
+        1350.6697514892576,
+        536.1332893615722
       ],
       "size": [
         532.3468136169436,
         628.1862041488649
       ],
       "flags": {},
-      "order": 18,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
           "link": 11
-        },
-        {
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": 32
         }
       ],
       "outputs": [
@@ -331,7 +323,7 @@
     },
     {
       "id": 24,
-      "type": "EmptyFlux2LatentImage",
+      "type": "EmptySD3LatentImage",
       "pos": [
         400,
         410
@@ -371,7 +363,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "EmptyFlux2LatentImage",
+        "Node name for S&R": "EmptySD3LatentImage",
         "cnr_id": "comfy-core",
         "ue_properties": {
           "widget_ue_connectable": {},
@@ -394,8 +386,8 @@
       "id": 25,
       "type": "PrimitiveInt",
       "pos": [
-        46.775970458984375,
-        484.53597045898437
+        40,
+        410
       ],
       "size": [
         270,
@@ -425,11 +417,11 @@
         }
       },
       "widgets_values": [
-        1024,
+        768,
         "fixed"
       ],
       "widgets_values_named": {
-        "value": 1024,
+        "value": 768,
         "control_after_generate": "fixed"
       }
     },
@@ -437,8 +429,8 @@
       "id": 26,
       "type": "PrimitiveInt",
       "pos": [
-        42.90395568847657,
-        652.6159704589844
+        40,
+        520
       ],
       "size": [
         270,
@@ -468,20 +460,74 @@
         }
       },
       "widgets_values": [
-        1024,
+        1376,
         "fixed"
       ],
       "widgets_values_named": {
-        "value": 1024,
+        "value": 1376,
         "control_after_generate": "fixed"
+      }
+    },
+    {
+      "id": 38,
+      "type": "PromptBatch",
+      "pos": [
+        780,
+        40
+      ],
+      "size": [
+        540,
+        640
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "prompts",
+          "shape": 6,
+          "type": "STRING",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "seeds",
+          "shape": 6,
+          "type": "INT",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PromptBatch",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
+        "p01\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
+        "42\n43\n",
+        "xenoflora, 35mm photo, natural daylight\n"
+      ],
+      "widgets_values_named": {
+        "characters": "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
+        "prompts": "p01\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
+        "seeds": "42\n43\n",
+        "prefix": "xenoflora, 35mm photo, natural daylight\n"
       }
     },
     {
       "id": 39,
       "type": "StartLoop",
       "pos": [
-        1941.1119409179687,
-        709.856007385254
+        1400,
+        40
       ],
       "size": [
         370,
@@ -506,7 +552,7 @@
         {
           "name": "mode.list",
           "type": "*",
-          "link": 29
+          "link": 13
         }
       ],
       "outputs": [
@@ -514,8 +560,7 @@
           "name": "iteration_index",
           "type": "INT",
           "links": [
-            15,
-            34
+            15
           ]
         },
         {
@@ -563,23 +608,21 @@
       "id": 40,
       "type": "GetItemFromList",
       "pos": [
-        1406.6685397620333,
-        346.39805432275193
+        1404.685048510742,
+        350.3649863830567
       ],
       "size": [
         280,
         70
       ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 12,
+      "flags": {},
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
           "name": "list",
           "type": "*",
-          "link": 30
+          "link": 14
         },
         {
           "name": "index",
@@ -627,7 +670,7 @@
         140
       ],
       "flags": {},
-      "order": 19,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -709,7 +752,7 @@
           ]
         }
       ],
-      "title": "Negative Prompt",
+      "title": "CLIP Text Encode (negative)",
       "properties": {
         "Node name for S&R": "CLIPTextEncode",
         "cnr_id": "comfy-core",
@@ -720,10 +763,10 @@
         }
       },
       "widgets_values": [
-        "worst quality, bad anatomy, watermark, jpeg artifact"
+        "diptych, split screen, two panels, side by side, before and after comparison, collage, multiple images, anime, manga"
       ],
       "widgets_values_named": {
-        "text": "worst quality, bad anatomy, watermark, jpeg artifact"
+        "text": "diptych, split screen, two panels, side by side, before and after comparison, collage, multiple images, anime, manga"
       }
     },
     {
@@ -738,7 +781,7 @@
         200
       ],
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -752,10 +795,10 @@
         }
       },
       "widgets_values": [
-        "MOSS-Image Base text-to-image, multi prompt.\nPromptBatch feeds Start Loop in List mode; each list item goes to the Positive Prompt.\nSkip Layer Guidance layer 22 sits between the LoRA stack and the KSampler.\nTemplate speed settings: 25 steps, CFG 2.5, er_sde/simple. Official: 50 steps, CFG 3, euler.\nWidth/height must be multiples of 16, about 1-2 MP."
+        "Text-to-image. No reference image.\n\nMulty_prompts feeds Start Loop in List mode.\nThe sampler seed control is fixed.\nOutput is 768x1376.\nPositive encoder is Text Encode Qwen Image Edit Plus. Leave its image slots empty.\nThe LoRA stack is on the model and on that encoder's CLIP.\nThe negative prompt stays on the CLIP loader, past the stack.\n"
       ],
       "widgets_values_named": {
-        "text": "MOSS-Image Base text-to-image, multi prompt.\nPromptBatch feeds Start Loop in List mode; each list item goes to the Positive Prompt.\nSkip Layer Guidance layer 22 sits between the LoRA stack and the KSampler.\nTemplate speed settings: 25 steps, CFG 2.5, er_sde/simple. Official: 50 steps, CFG 3, euler.\nWidth/height must be multiples of 16, about 1-2 MP."
+        "text": "Text-to-image. No reference image.\n\nMulty_prompts feeds Start Loop in List mode.\nThe sampler seed control is fixed.\nOutput is 768x1376.\nPositive encoder is Text Encode Qwen Image Edit Plus. Leave its image slots empty.\nThe LoRA stack is on the model and on that encoder's CLIP.\nThe negative prompt stays on the CLIP loader, past the stack.\n"
       },
       "color": "#432",
       "bgcolor": "#653"
@@ -811,20 +854,20 @@
         }
       },
       "widgets_values": [
-        "MOSSi/MOSSi-inkconf-cmx01-88.safetensors",
-        0.8,
-        "MOSSi/MOSSi-inkconf-raw-01.safetensors",
+        "KREA2/Krea_2_Xenoflora_Trees_tcrzit_BF16-3K.safetensors",
         0.75,
+        "None",
+        1,
         "None",
         1,
         "None",
         1
       ],
       "widgets_values_named": {
-        "lora_01": "MOSSi/MOSSi-inkconf-cmx01-88.safetensors",
-        "strength_01": 0.8,
-        "lora_02": "MOSSi/MOSSi-inkconf-raw-01.safetensors",
-        "strength_02": 0.75,
+        "lora_01": "KREA2/Krea_2_Xenoflora_Trees_tcrzit_BF16-3K.safetensors",
+        "strength_01": 0.75,
+        "lora_02": "None",
+        "strength_02": 1,
         "lora_03": "None",
         "strength_03": 1,
         "lora_04": "None",
@@ -839,7 +882,7 @@
     },
     {
       "id": 47,
-      "type": "CLIPTextEncode",
+      "type": "TextEncodeQwenImageEditPlus",
       "pos": [
         1404.4309378233852,
         490.15077142677046
@@ -848,8 +891,10 @@
         427.1098013305665,
         168
       ],
-      "flags": {},
-      "order": 14,
+      "flags": {
+        "collapsed": true
+      },
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -858,10 +903,34 @@
           "link": 21
         },
         {
-          "name": "text",
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "prompt",
           "type": "STRING",
           "widget": {
-            "name": "text"
+            "name": "prompt"
           },
           "link": 23
         }
@@ -875,9 +944,8 @@
           ]
         }
       ],
-      "title": "Positive Prompt (from list)",
       "properties": {
-        "Node name for S&R": "CLIPTextEncode",
+        "Node name for S&R": "TextEncodeQwenImageEditPlus",
         "ue_properties": {
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
@@ -888,228 +956,7 @@
         ""
       ],
       "widgets_values_named": {
-        "text": ""
-      }
-    },
-    {
-      "id": 49,
-      "type": "SkipLayerGuidanceDiTSimple",
-      "pos": [
-        1398.0640295410155,
-        62.264029541015645
-      ],
-      "size": [
-        350,
-        210
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 24
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            25
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SkipLayerGuidanceDiTSimple",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "",
-        "22",
-        0,
-        0.5
-      ],
-      "widgets_values_named": {
-        "double_layers": "",
-        "single_layers": "22",
-        "start_percent": 0,
-        "end_percent": 0.5
-      }
-    },
-    {
-      "id": 52,
-      "type": "PromptBatch",
-      "pos": [
-        780,
-        40
-      ],
-      "size": [
-        540,
-        640
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "prompts",
-          "shape": 6,
-          "type": "STRING",
-          "links": [
-            29
-          ]
-        },
-        {
-          "name": "seeds",
-          "shape": 6,
-          "type": "INT",
-          "links": [
-            30
-          ]
-        },
-        {
-          "name": "plate_name",
-          "shape": 6,
-          "type": "STRING",
-          "links": [
-            33
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PromptBatch",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
-        "p01_awning\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02_plants\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
-        "42\n43\n",
-        "35mm photo, natural daylight\n"
-      ],
-      "widgets_values_named": {
-        "characters": "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
-        "prompts": "p01_awning\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02_plants\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
-        "seeds": "42\n43\n",
-        "prefix": "35mm photo, natural daylight\n"
-      }
-    },
-    {
-      "id": 53,
-      "type": "StringConcatenate",
-      "pos": [
-        833.6163039856319,
-        986.8916940856079
-      ],
-      "size": [
-        400,
-        200
-      ],
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "string_b",
-          "type": "STRING",
-          "widget": {
-            "name": "string_b"
-          },
-          "link": 35
-        }
-      ],
-      "outputs": [
-        {
-          "name": "STRING",
-          "type": "STRING",
-          "links": [
-            32
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "StringConcatenate",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "MOSS01_Multy_prompt01/",
-        "blah01",
-        ""
-      ],
-      "widgets_values_named": {
-        "string_a": "MOSS01_Multy_prompt01/",
-        "string_b": "blah01",
-        "delimiter": ""
-      }
-    },
-    {
-      "id": 54,
-      "type": "GetItemFromList",
-      "pos": [
-        843.3832974853516,
-        1263.5592162475587
-      ],
-      "size": [
-        280,
-        70
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "list",
-          "type": "*",
-          "link": 33
-        },
-        {
-          "name": "index",
-          "type": "INT",
-          "widget": {
-            "name": "index"
-          },
-          "link": 34
-        }
-      ],
-      "outputs": [
-        {
-          "name": "*",
-          "type": "*",
-          "links": [
-            35
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "GetItemFromList",
-        "cnr_id": "comfy-core",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        0
-      ],
-      "widgets_values_named": {
-        "index": 0
+        "prompt": ""
       }
     }
   ],
@@ -1179,6 +1026,14 @@
       "IMAGE"
     ],
     [
+      14,
+      38,
+      1,
+      40,
+      0,
+      "INT"
+    ],
+    [
       15,
       39,
       0,
@@ -1231,68 +1086,12 @@
       39,
       3,
       47,
-      1,
+      5,
       "STRING"
     ],
     [
-      24,
-      46,
-      0,
-      49,
-      0,
-      "MODEL"
-    ],
-    [
-      25,
-      49,
-      0,
-      15,
-      0,
-      "MODEL"
-    ],
-    [
-      30,
-      52,
-      1,
-      40,
-      0,
-      "INT"
-    ],
-    [
-      32,
-      53,
-      0,
-      21,
-      1,
-      "STRING"
-    ],
-    [
-      33,
-      52,
-      2,
-      54,
-      0,
-      "STRING"
-    ],
-    [
-      34,
-      39,
-      0,
-      54,
-      1,
-      "INT"
-    ],
-    [
-      35,
-      54,
-      0,
-      53,
-      0,
-      "STRING"
-    ],
-    [
-      29,
-      52,
+      13,
+      38,
       0,
       39,
       2,
@@ -1305,6 +1104,14 @@
       41,
       2,
       "IMAGE"
+    ],
+    [
+      24,
+      46,
+      0,
+      15,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [],
@@ -1313,10 +1120,10 @@
     "ue_links": [],
     "links_added_by_ue": [],
     "ds": {
-      "scale": 0.8264462809917354,
+      "scale": 0.6830134553650705,
       "offset": [
-        319.3566848156094,
-        186.23497644687066
+        522.4541012693807,
+        476.37736042470357
       ]
     },
     "frontendVersion": "1.57.1",
