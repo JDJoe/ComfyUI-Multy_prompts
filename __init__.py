@@ -11,7 +11,7 @@ from typing_extensions import override
 
 from comfy_api.latest import ComfyExtension, io
 
-from .prompt_batch import SEED_MAX, build_batch, seeds_are_rolled
+from .prompt_batch import SEED_MAX, _split_prompts, build_batch, seeds_are_rolled
 
 
 class PromptBatch(io.ComfyNode):
@@ -22,10 +22,10 @@ class PromptBatch(io.ComfyNode):
             display_name="Multy_prompts",
             category="utilities/prompt",
             description=(
-                "Build one finished prompt and one seed per image. "
+                "Build one finished prompt, one seed, and one plate name per image. "
                 "A prefix is pasted in front of every plate. "
                 "Connect prompts to Start Loop (List mode). "
-                "Connect seeds to Get Item From List with index from iteration_index."
+                "Connect seeds and plate_name to Get Item From List with index from iteration_index."
             ),
             search_aliases=[
                 "Multyprompts",
@@ -36,6 +36,7 @@ class PromptBatch(io.ComfyNode):
                 "characters",
                 "prompt list",
                 "seed list",
+                "plate name",
             ],
             inputs=[
                 io.String.Input(
@@ -61,8 +62,9 @@ class PromptBatch(io.ComfyNode):
                     dynamic_prompts=False,
                     placeholder="p01\nCHAR1 stands in the rain outside a station.\n\np02\nCHAR1 hands CHAR2 a letter in a dark hallway.",
                     tooltip=(
-                        "One image per plate. A line like p01 or p01_station starts the next prompt. "
+                        "One image per plate. A line like p01, p01_station, or p04_ starts the next prompt. "
                         "Blank lines inside a plate stay in the text. The plate id is not sent to the sampler. "
+                        "The same id is on the plate_name output. "
                         "CHAR tokens are replaced with that character's description."
                     ),
                 ),
@@ -77,6 +79,7 @@ class PromptBatch(io.ComfyNode):
                         "One line per plate, in the same order as p01, p02, and so on. "
                         "An integer keeps that seed. An empty line chooses a seed when you queue. "
                         "An empty box chooses a seed for every prompt. "
+                        "Fewer lines than plates keep the ones you wrote and choose the rest. "
                         "On the sampler, set the seed control to fixed so its widget does not replace this seed."
                     ),
                 ),
@@ -111,14 +114,29 @@ class PromptBatch(io.ComfyNode):
                         "then connect the item to the sampler seed."
                     ),
                 ),
+                io.String.Output(
+                    id="plate_name",
+                    display_name="plate_name",
+                    is_output_list=True,
+                    tooltip=(
+                        "One plate name per image, in the same order as the prompts. "
+                        "p04_ comes out as p04. p02_letter comes out as p02_letter. "
+                        "Connect to Get Item From List with index from iteration_index. "
+                        "That item is the file name for Save Image."
+                    ),
+                ),
             ],
         )
 
     @classmethod
     def fingerprint_inputs(cls, characters, prompts, seeds, prefix):
-        # Blank seeds are chosen at queue time, so that queue must not reuse
-        # the previous list. Explicit seeds stay cached with the text.
-        if seeds_are_rolled(seeds):
+        # Chosen seeds are new at queue time, so that queue must not reuse
+        # the previous list. A full list of explicit seeds stays cached.
+        try:
+            prompt_count = len(_split_prompts(prompts if isinstance(prompts, str) else ""))
+        except Exception:
+            prompt_count = None
+        if seeds_are_rolled(seeds, prompt_count):
             return float("nan")
         return False
 
@@ -134,6 +152,7 @@ class PromptBatch(io.ComfyNode):
         return io.NodeOutput(
             [shot.prompt for shot in shots],
             [shot.seed for shot in shots],
+            [shot.plate_id for shot in shots],
         )
 
 

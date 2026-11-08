@@ -2,13 +2,18 @@
 
 ![Text-to-image sample](screenshot.webp)
 
-A ComfyUI node that turns one character box, one shared prefix, and one prompt wall into one finished prompt and one seed per image. The node does not load a model and does not sample. Your existing graph runs once per plate.
+A ComfyUI node that turns one character box, one shared prefix, and one prompt wall into one finished prompt, one seed, and one plate name per image. The node does not load a model and does not sample. Your existing graph runs once per plate.
 
 Search for **Multy_prompts**. It is under **utilities → prompt**.
 
 ## Install
 
-Copy this folder into `ComfyUI/custom_nodes/` and restart ComfyUI.
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/JDJoe/ComfyUI-Multy_prompts.git
+```
+
+Restart ComfyUI. Search for **Multy_prompts**. Leave the folder name as `ComfyUI-Multy_prompts`.
 
 The graph also uses three built-in nodes:
 
@@ -33,7 +38,7 @@ Leave **Start Loop** `parent_iteration` and `initial_iteration_value` empty. Tho
 
 ## Connections
 
-**Multy_prompts** has two outputs. **Start Loop** can walk only one list, so the prompts use the loop and the seeds use **Get Item From List**.
+**Multy_prompts** has three outputs. **Start Loop** can walk only one list, so the prompts use the loop. The seeds and the plate names each use their own **Get Item From List**, both indexed by `iteration_index`.
 
 | From | To |
 |---|---|
@@ -42,6 +47,8 @@ Leave **Start Loop** `parent_iteration` and `initial_iteration_value` empty. Tho
 | Multy_prompts `seeds` | Get Item From List `list` |
 | Start Loop `iteration_index` | Get Item From List `index` |
 | Get Item From List output | sampler `seed` |
+| Multy_prompts `plate_name` | a second Get Item From List `list` |
+| Start Loop `iteration_index` | that Get Item From List `index` |
 | Save Image `images` | End Loop `termination` |
 
 Drag `list_item` onto the prompt text box, and drag the **Get Item From List** output onto the sampler seed box. That turns each widget into an input.
@@ -57,6 +64,10 @@ Start Loop.list_item  ──► positive text encoder.prompt ──► sampler �
 Multy_prompts.seeds   ──► Get Item From List.list                                        │
 Start Loop.iteration_index ──► Get Item From List.index                                  │
 Get Item From List ──► sampler.seed                                                      │
+                                                                                        │
+Multy_prompts.plate_name ──► Get Item From List.list                                     │
+Start Loop.iteration_index ──► Get Item From List.index                                  │
+Get Item From List ──► Concatenate Text.string_b ──► Save Image.filename_prefix         │
                                                                                         ▼
                                                                               End Loop.termination
 ```
@@ -88,9 +99,11 @@ Tokens are `CHAR` plus a positive integer: `CHAR1`, `CHAR2`, `CHAR10`. `CHAR10` 
 
 ## Prompts
 
-Same headers as a PlatePress shot wall. A plate id on its own line starts the next image. Blank lines inside a plate stay in the text. The id is not sent to the sampler.
+Same headers as a PlatePress shot wall. A plate id on its own line starts the next image. Blank lines inside a plate stay in the text. The id is not sent to the sampler. It is sent on `plate_name`, one name per image, in wall order. `p04_` comes out as `p04`. `p02_letter` comes out as `p02_letter`.
 
-`p01` and `p01_station` both count. `p1` and `p001` are the same plate. Text after the id on that same line is the first line of the prompt.
+To use that name as the file name, connect the **Get Item From List** item to **Concatenate Text** `string_b`. Type the folder in `string_a`. Set the delimiter to `/`. Convert Save Image `filename_prefix` to an input and connect the concatenated text there. Folder `inkconf` and plate `p04` save as `output/inkconf/p04_00001_.png`. Save Image still adds the `_00001_` counter. An empty folder with delimiter `/` becomes a leading slash, which Save Image rejects. Type the slash in the folder box (`inkconf/`) and leave the delimiter empty when that box may be blank. An empty box then saves `p04_00001_.png`.
+
+`p01` and `p01_station` both count. A leftover underscore, as in `p04_`, counts as `p04`. `p1` and `p001` are the same plate. Text after the id on that same line is the first line of the prompt.
 
 ```
 p01
@@ -103,7 +116,7 @@ The hall is dark. A single bulb hangs over the door.
 
 ## Seeds
 
-One line per plate, in the same order as the plates. An integer keeps that seed. An empty line chooses a seed when you queue. An empty box chooses a seed for every plate.
+One line per plate, in the same order as the plates. An integer keeps that seed. An empty line chooses a seed when you queue. An empty box chooses a seed for every plate. Fewer lines than plates keep the seeds you wrote and choose a seed for each plate after that.
 
 ```
 657539441289641
@@ -111,7 +124,7 @@ One line per plate, in the same order as the plates. An integer keeps that seed.
 1001
 ```
 
-The blank second line is a chosen seed for `p02`. The number of lines must match the number of plates.
+The blank second line is a chosen seed for `p02`. Two lines and eleven plates keep those two seeds and choose the other nine.
 
 ## Sample workflow
 

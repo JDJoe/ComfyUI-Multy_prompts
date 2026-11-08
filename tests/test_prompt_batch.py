@@ -92,6 +92,17 @@ class BuildBatchTests(unittest.TestCase):
             batch("", "p1\nfirst\n\np001\nsecond", "1\n2")
         self.assertIn("same plate", str(caught.exception))
 
+    def test_trailing_underscore_is_still_a_plate(self):
+        shots = batch("", "p04_\nSTYLE: inkconf\nA bazaar.\n\np05_\nA cockpit.", "1\n2")
+        self.assertEqual([shot.plate_id for shot in shots], ["p04", "p05"])
+        self.assertEqual(shots[0].prompt, "STYLE: inkconf\nA bazaar.")
+        self.assertEqual(shots[1].prompt, "A cockpit.")
+
+    def test_p04_and_p04_underscore_are_the_same_plate(self):
+        with self.assertRaises(PromptBatchError) as caught:
+            batch("", "p04\nfirst\n\np04_\nsecond", "1\n2")
+        self.assertIn("same plate", str(caught.exception))
+
     def test_text_before_the_first_plate_is_an_error(self):
         with self.assertRaises(PromptBatchError) as caught:
             batch("", "CHAR1 stands here.\n\np01\nmore", "1")
@@ -110,11 +121,15 @@ class BuildBatchTests(unittest.TestCase):
         shots = batch("", "p01\none\n\np02\ntwo", "8\n\n", rolls=[9])
         self.assertEqual([shot.seed for shot in shots], [8, 9])
 
-    def test_seed_count_must_match(self):
+    def test_missing_seed_lines_roll_the_rest(self):
+        shots = batch("", "p01\none\n\np02\ntwo\n\np03\nthree", "8\n9", rolls=[4])
+        self.assertEqual([shot.seed for shot in shots], [8, 9, 4])
+
+    def test_extra_seed_lines_are_an_error(self):
         with self.assertRaises(PromptBatchError) as caught:
-            batch("", "p01\none\n\np02\ntwo", "1")
-        self.assertIn("Seeds has 1 line", str(caught.exception))
-        self.assertIn("Prompts has 2 prompts", str(caught.exception))
+            batch("", "p01\none", "1\n2")
+        self.assertIn("Seeds has 2 lines", str(caught.exception))
+        self.assertIn("Prompts has 1 prompt", str(caught.exception))
 
     def test_bad_seed(self):
         with self.assertRaises(PromptBatchError) as caught:
@@ -167,11 +182,16 @@ class BuildBatchTests(unittest.TestCase):
         shots = batch("", "p01\nA red door.", "1", prefix="  \n")
         self.assertEqual(shots[0].prompt, "A red door.")
 
-    def test_seeds_are_rolled_only_for_blank_lines(self):
+    def test_seeds_are_rolled_for_blanks_and_missing_lines(self):
         self.assertTrue(seeds_are_rolled(""))
         self.assertTrue(seeds_are_rolled("1\n\n2"))
         self.assertFalse(seeds_are_rolled("1\n2\n"))
         self.assertFalse(seeds_are_rolled("0"))
+        # Two written seeds and eleven plates: the tail is chosen at queue time.
+        self.assertTrue(seeds_are_rolled("8\n9", prompt_count=11))
+        self.assertFalse(seeds_are_rolled("8\n9", prompt_count=2))
+        # Extra lines are an error in execute, so they do not count as a roll.
+        self.assertFalse(seeds_are_rolled("8\n9\n10", prompt_count=2))
 
 
 if __name__ == "__main__":

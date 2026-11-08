@@ -21,9 +21,9 @@ SEED_MAX = 0xFFFFFFFFFFFFFFFF
 TOKEN_RE = re.compile(r"(?<![A-Za-z0-9])CHAR[1-9]\d*")
 # CHAR1 on its own line, or CHAR1 followed by the description on that same line.
 CHAR_HEADER_RE = re.compile(r"^(CHAR[1-9]\d*)(?:\s+(\S.*))?$")
-# p01, p001, p09A, p01_station, p09A_morning. Same plate ids as PlatePress.
+# p01, p001, p09A, p01_station, p09A_morning, and p04_ with nothing after the underscore.
 PLATE_HEADER_RE = re.compile(
-    r"^(?P<id>[Pp]\d+[A-Za-z]?(?:_[A-Za-z0-9_]+)?)(?:\s+(?P<rest>\S.*))?$"
+    r"^(?P<id>[Pp]\d+[A-Za-z]?(?:_[A-Za-z0-9_]+)?)_?(?:\s+(?P<rest>\S.*))?$"
 )
 
 
@@ -67,16 +67,20 @@ def build_batch(characters: str, prompts: str, seeds: str, roll_seed, prefix: st
     return shots
 
 
-def seeds_are_rolled(seeds: str) -> bool:
+def seeds_are_rolled(seeds: str, prompt_count: int | None = None) -> bool:
     """True when at least one seed is chosen at queue time.
 
     An empty Seeds box chooses a seed for every prompt. A blank line chooses
-    one seed. Explicit integers stay cached between queues.
+    one seed. Lines past the last plate are an error. Missing lines at the
+    end choose a seed for each remaining plate. Explicit integers stay cached.
     """
     text = _as_text(seeds, "Seeds")
     if text.strip() == "":
         return True
-    return any(line.strip() == "" for line in text.splitlines())
+    lines = text.splitlines()
+    if any(line.strip() == "" for line in lines):
+        return True
+    return prompt_count is not None and len(lines) < prompt_count
 
 
 def _as_text(value, box_name: str) -> str:
@@ -224,12 +228,12 @@ def _parse_seeds(text: str, count: int, roll_seed) -> list[int]:
     # splitlines() drops a trailing newline, so the last Enter in the box
     # does not add an extra seed. A blank line in the middle still counts.
     lines = text.splitlines()
-    if len(lines) != count:
+    if len(lines) > count:
         seed_word = "line" if len(lines) == 1 else "lines"
         prompt_word = "prompt" if count == 1 else "prompts"
         raise PromptBatchError(
             f"Seeds has {len(lines)} {seed_word} and Prompts has {count} {prompt_word}. "
-            "Use one seed line per plate, in the same order, or leave Seeds empty."
+            "Remove the extra seed lines, or add a plate for each one."
         )
     values = []
     for index, line in enumerate(lines, start=1):
@@ -248,6 +252,9 @@ def _parse_seeds(text: str, count: int, roll_seed) -> list[int]:
                 f"Seed line {index} is {value}. The largest seed is {SEED_MAX}."
             )
         values.append(value)
+    # Fewer seed lines than plates: the listed seeds stay, the rest are chosen.
+    while len(values) < count:
+        values.append(_rolled_seed(roll_seed))
     return values
 
 
