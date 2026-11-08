@@ -994,13 +994,13 @@
       "widgets_values": [
         "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
         "p01_awning\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02_plants\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
-        "\n42\n4343\n",
+        "42\n43\n",
         "35mm photo, natural daylight\n"
       ],
       "widgets_values_named": {
         "characters": "CHAR1 a European woman in her thirties with short blond hair and a grey coat\n\nCHAR2 a tall European man with a scar on his left cheek and red hair\n",
         "prompts": "p01_awning\nIn the rain outside a station, CHAR1 waits under the awning covered by intricate plants\n\np02_plants\nIn a dark hallway, CHAR1 hands CHAR2 a letter.\nA single bulb hangs over the door. Jungle plans crawling up the walls\n",
-        "seeds": "\n42\n4343\n",
+        "seeds": "42\n43\n",
         "prefix": "35mm photo, natural daylight\n"
       }
     },

@@ -128,11 +128,11 @@ The blank second line is a chosen seed for `p02`. Two lines and eleven plates ke
 
 ## Sample workflow
 
-`krea2_t2i_multy_prompts.json` is the text-to-image sample. Start Loop is in List mode, the sampler seed control is fixed, and the output is 768×1376. There is no reference image.
+`krea2_t2i_multy_prompts.json` is the text-to-image sample. Start Loop is in List mode, the sampler seed control is fixed, and the output is 768×1376. There is no reference image. The graph is a MOSS-Image setup. The positive prompt is **CLIP Text Encode**, fed by Start Loop. **Skip Layer Guidance** sits between the LoRA stack and the sampler. The stack is **Lora Loader Stack (rgthree)** from [rgthree-comfy](https://github.com/rgthree/rgthree-comfy).
 
-The positive encoder is **Text Encode Qwen Image Edit Plus**. Its image slots stay empty. The plate from Start Loop connects to its prompt. The negative stays on **CLIP Text Encode**, taken straight from the CLIP loader.
+`plate_name` goes through a second **Get Item From List** into **Concatenate Text** `string_b`, and that text is the Save Image filename. The folder in `string_a` is `MOSS01_Multy_prompt01/`, with an empty delimiter. Plate `p01_awning` saves as `output/MOSS01_Multy_prompt01/p01_awning_00001_.png`.
 
-The model is `KREA2/krea2_turbo_fp8_scaled.safetensors`. **Lora Loader Stack (rgthree)** sits on the model and on the positive CLIP. Slot 1 is `KREA2/Krea_2_Xenoflora_Trees_tcrzit_BF16-3K.safetensors` at 0.75. That stack needs [rgthree-comfy](https://github.com/rgthree/rgthree-comfy).
+The model is `MOSS/moss_image_sft_int8_convrot.safetensors`, the CLIP is `MosTx/qwen3.5_9b_w4a8_gptq.safetensors`, and the VAE is `moss_vae/flux2-vae.safetensors`. The stack slots are `MOSSi/MOSSi-inkconf-cmx01-88.safetensors` at 0.8 and `MOSSi/MOSSi-inkconf-raw-01.safetensors` at 0.75.
 
 The identity-edit graph, which keeps a person from a reference photo, is [krea2-ref-image-multy-prompts](https://github.com/JDJoe/krea2-ref-image-multy-prompts).
 
